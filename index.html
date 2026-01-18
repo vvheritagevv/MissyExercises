@@ -15,7 +15,7 @@
     main { padding:16px; max-width: 1100px; margin: 0 auto; }
 
     .tabs { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-    button, input { font: inherit; }
+    button, input, select { font: inherit; }
     .tab { padding:10px 12px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; }
     .tab.active { background:#1f2a44; border-color:#3b4b6a; }
 
@@ -24,7 +24,6 @@
 
     .card { background:#0f1a2e; border:1px solid #243045; border-radius:14px; padding:12px; }
     .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px; }
-
 
     .btn { padding:10px 12px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; }
     .btn.primary { background:#2563eb; border-color:#2563eb; }
@@ -38,57 +37,63 @@
 
     .exTitle { font-weight:600; }
     .exMeta { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
-    .repGrid { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:8px; margin-top:10px; }
 
+    /* ---------- Responsive rep grid + hold controls ---------- */
+    .repGrid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .repCell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #243045;
+      border-radius: 12px;
+      background: #0b1220;
+      flex-wrap: wrap;              /* allow wrap so Start button never clips */
+    }
+
+    .repCell input[type="checkbox"] { width:18px; height:18px; }
     .repNum { font-size:12px; color:#cbd5e1; min-width:20px; }
-.repGrid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-}
 
-/* Make rep cells wrap instead of clipping content */
-.repCell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border: 1px solid #243045;
-  border-radius: 12px;
-  background: #0b1220;
-  flex-wrap: wrap;              /* ✅ allow wrap */
-}
+    .holdWrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 0;               /* don't push off-screen */
+      width: 100%;                  /* naturally moves to a new line */
+      justify-content: flex-end;    /* align right within the cell */
+    }
 
-/* Don’t shove hold controls off-screen */
-.holdWrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 0;               /* ✅ remove auto push */
-  width: 100%;                  /* ✅ forces to new line nicely */
-  justify-content: flex-end;    /* ✅ align to right within the cell */
-}
+    .holdTime {
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      color: #cbd5e1;
+      min-width: 0;                 /* avoid clipping */
+      text-align: right;
+    }
 
-.holdTime {
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  color: #cbd5e1;
-  min-width: 0;                 /* ✅ don’t force width that can clip */
-  text-align: right;
-}
-
-/* ✅ Responsive grid: fewer columns on small screens */
-@media (max-width: 420px) {
-  .repGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-@media (min-width: 421px) and (max-width: 720px) {
-  .repGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-    .holdBtn { padding:8px 10px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; font-size:12px; }
+    .holdBtn {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #243045;
+      background: #111b2f;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 12px;
+    }
     .holdBtn:disabled { opacity:.6; cursor:not-allowed; }
+
+    @media (max-width: 420px) {
+      .repGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 421px) and (max-width: 720px) {
+      .repGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
 
     table { width:100%; border-collapse: collapse; margin-top:12px; }
     th, td { text-align:left; padding:10px; border-bottom:1px solid #243045; font-size:14px; vertical-align:top; }
@@ -123,7 +128,7 @@
     <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px;" id="roundsWrap"></div>
 
     <div class="muted small" style="margin-top:12px;">
-      Hold exercises: tap <b>Start</b> to run the countdown. When it hits 0, that rep is auto-checked.
+      Hold exercises: tap <b>Start</b> to run the countdown. When it hits 0, that rep is auto-checked and you’ll hear a cue.
     </div>
   </section>
 
@@ -140,7 +145,7 @@
       <div class="muted">Program (fixed to your plan)</div>
       <div class="grid" id="programGrid" style="margin-top:12px;"></div>
       <div class="muted small" style="margin-top:12px;">
-        (If you want, I can add: sets, pain score, RPE, notes per round, or a “morning/afternoon/evening/night” schedule.)
+        Audio: beeps on timer start + finish. Pain score: stored per round (0–10).
       </div>
     </div>
   </section>
@@ -148,79 +153,79 @@
 
 <script>
   // -------------------- Model --------------------
-  const LS_KEY = "hep_checklist_pwa_v1";
+  const LS_KEY = "hep_checklist_pwa_v2";
 
   const PROGRAM = {
     circuitsPerDay: 4,
-exercises: [
-  {
-    id: "heel_slide",
-    name: "Supine Heel Slide",
-    reps: 10,
-    holdSec: 5,
-    holdLabel: "hold at top",
-    description: "Lie on your back and slowly slide your heel toward your buttocks, bending the knee. Hold briefly at the top, then slowly straighten the leg."
-  },
-  {
-    id: "glute_set",
-    name: "Gluteal Set",
-    reps: 10,
-    holdSec: 10,
-    holdLabel: "hold contraction",
-    description: "Tighten your buttock muscles while keeping your legs relaxed. Focus on squeezing evenly without holding your breath."
-  },
-  {
-    id: "quad_set",
-    name: "Quad Set",
-    reps: 10,
-    holdSec: 10,
-    holdLabel: "hold contraction",
-    description: "With the leg straight, tighten the thigh muscle by pressing the knee down toward the surface beneath you."
-  },
-  {
-    id: "slr_flex",
-    name: "Straight Leg Raise (Flexion)",
-    reps: 10,
-    holdSec: 0,
-    holdLabel: "",
-    description: "Keep one knee bent and the other straight. Lift the straight leg to the height of the opposite knee, then slowly lower."
-  },
-  {
-    id: "glute_bridge",
-    name: "Glute Bridge",
-    reps: 10,
-    holdSec: 10,
-    holdLabel: "hold contraction",
-    description: "Lie on your back with knees bent. Squeeze your glutes and lift your hips until your body forms a straight line from shoulders to knees."
-  },
-  {
-    id: "laq_ecc",
-    name: "Eccentric Long Arc Quad (Leg Extension)",
-    reps: 10,
-    holdSec: 0,
-    holdLabel: "",
-    description: "From a seated position, straighten the knee fully, then slowly lower the leg back down with control."
-  },
-  {
-    id: "ankle_pumps",
-    name: "Ankle Pumps",
-    reps: 10,
-    holdSec: 0,
-    holdLabel: "",
-    description: "Move your ankle up toward your head and then down away from you, pumping through full comfortable range."
-  }
-]
-
+    exercises: [
+      {
+        id: "heel_slide",
+        name: "Supine Heel Slide",
+        reps: 10,
+        holdSec: 5,
+        holdLabel: "hold at top",
+        description: "Lie on your back and slowly slide your heel toward your buttocks, bending the knee. Hold briefly at the top, then slowly straighten the leg."
+      },
+      {
+        id: "glute_set",
+        name: "Gluteal Set",
+        reps: 10,
+        holdSec: 10,
+        holdLabel: "hold contraction",
+        description: "Tighten your buttock muscles while keeping your legs relaxed. Focus on squeezing evenly without holding your breath."
+      },
+      {
+        id: "quad_set",
+        name: "Quad Set",
+        reps: 10,
+        holdSec: 10,
+        holdLabel: "hold contraction",
+        description: "With the leg straight, tighten the thigh muscle by pressing the knee down toward the surface beneath you."
+      },
+      {
+        id: "slr_flex",
+        name: "Straight Leg Raise (Flexion)",
+        reps: 10,
+        holdSec: 0,
+        holdLabel: "",
+        description: "Keep one knee bent and the other straight. Lift the straight leg to the height of the opposite knee, then slowly lower."
+      },
+      {
+        id: "glute_bridge",
+        name: "Glute Bridge",
+        reps: 10,
+        holdSec: 10,
+        holdLabel: "hold contraction",
+        description: "Lie on your back with knees bent. Squeeze your glutes and lift your hips until your body forms a straight line from shoulders to knees."
+      },
+      {
+        id: "laq_ecc",
+        name: "Eccentric Long Arc Quad (Leg Extension)",
+        reps: 10,
+        holdSec: 0,
+        holdLabel: "",
+        description: "From a seated position, straighten the knee fully, then slowly lower the leg back down with control."
+      },
+      {
+        id: "ankle_pumps",
+        name: "Ankle Pumps",
+        reps: 10,
+        holdSec: 0,
+        holdLabel: "",
+        description: "Move your ankle up toward your head and then down away from you, pumping through full comfortable range."
+      }
+    ]
   };
 
   // Data structure:
   // {
   //   days: {
   //     "YYYY-MM-DD": {
-  //       createdAt, rounds: [
-  //         { exId: { reps: [bool x 10] } ... },
-  //         ... 4 rounds
-  //       ]
+  //       createdAt,
+  //       rounds: [
+  //         { exId: { reps: [bool x 10] } ... }, ... 4 rounds
+  //       ],
+  //       painScores: [null|0..10 x 4]
   //     }
   //   }
   // }
@@ -251,6 +256,7 @@ exercises: [
 
   function ensureDay(dayKey) {
     if (store.days[dayKey]) return;
+
     const rounds = [];
     for (let r = 0; r < PROGRAM.circuitsPerDay; r++) {
       const roundObj = {};
@@ -259,7 +265,12 @@ exercises: [
       }
       rounds.push(roundObj);
     }
-    store.days[dayKey] = { createdAt: Date.now(), rounds };
+
+    store.days[dayKey] = {
+      createdAt: Date.now(),
+      rounds,
+      painScores: Array(PROGRAM.circuitsPerDay).fill(null)
+    };
     saveStore();
   }
 
@@ -271,6 +282,36 @@ exercises: [
 
   // Timers keyed by unique rep key: `${dayKey}|${roundIndex}|${exId}|${repIndex}`
   const timers = new Map();
+
+  // -------------------- Audio cues --------------------
+  let audioCtx = null;
+
+  function beep({ freq = 880, durationMs = 120, volume = 0.05 } = {}) {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    setTimeout(() => {
+      osc.stop();
+      osc.disconnect();
+      gain.disconnect();
+    }, durationMs);
+  }
+
+  function cueStart() {
+    beep({ freq: 520, durationMs: 90, volume: 0.05 });
+  }
+
+  function cueDone() {
+    beep({ freq: 880, durationMs: 110, volume: 0.06 });
+    setTimeout(() => beep({ freq: 988, durationMs: 110, volume: 0.06 }), 140);
+  }
 
   function setTodayHeader() {
     const d = new Date();
@@ -303,10 +344,12 @@ exercises: [
     for (let r = 0; r < PROGRAM.circuitsPerDay; r++) {
       const details = document.createElement("details");
       details.className = "round";
-      details.open = (r === 0); // open first by default
+      details.open = (r === 0);
 
       const roundDone = roundCompletion(todayKey, r);
-      const roundBadge = roundDone === 100 ? "✅ Complete" : `${roundDone}%`;
+      const pain = day.painScores?.[r];
+      const painText = (pain === null || pain === undefined) ? "" : ` • Pain ${pain}/10`;
+      const roundBadge = (roundDone === 100 ? "✅ Complete" : `${roundDone}%`) + painText;
 
       const summary = document.createElement("summary");
       summary.innerHTML = `
@@ -324,6 +367,38 @@ exercises: [
       inner.style.flexDirection = "column";
       inner.style.gap = "12px";
 
+      // Pain score control per round
+      const painRow = document.createElement("div");
+      painRow.className = "card";
+      const currentPain = day.painScores?.[r];
+
+      painRow.innerHTML = `
+        <div class="row spaced">
+          <div>
+            <div style="font-weight:600;">Pain score (0–10)</div>
+            <div class="muted small">Track how the round felt (optional)</div>
+          </div>
+          <div class="row">
+            <select id="pain_${r}" class="btn" style="padding:10px 12px;">
+              <option value="">—</option>
+              ${Array.from({length: 11}, (_, i) => `
+                <option value="${i}" ${String(currentPain)===String(i) ? "selected" : ""}>${i}</option>
+              `).join("")}
+            </select>
+          </div>
+        </div>
+      `;
+      inner.appendChild(painRow);
+
+      const painSelect = painRow.querySelector(`#pain_${r}`);
+      painSelect.addEventListener("change", () => {
+        const v = painSelect.value;
+        day.painScores[r] = (v === "" ? null : Number(v));
+        saveStore();
+        updateRoundHeader(details, r);
+      });
+
+      // Exercises
       for (const ex of PROGRAM.exercises) {
         const card = document.createElement("div");
         card.className = "card";
@@ -334,13 +409,10 @@ exercises: [
 
         card.innerHTML = `
           <div class="exTitle">${escapeHtml(ex.name)}</div>
-          <div class="muted small" style="margin-top:4px;">
-          ${escapeHtml(ex.description)}
-          </div>
+          <div class="muted small" style="margin-top:4px;">${escapeHtml(ex.description)}</div>
           <div class="exMeta">${meta}</div>
           <div class="repGrid" data-round="${r}" data-ex="${ex.id}"></div>
-`;
-
+        `;
 
         const repGrid = card.querySelector(".repGrid");
         const repsArr = day.rounds[r][ex.id].reps;
@@ -350,8 +422,8 @@ exercises: [
           cell.className = "repCell";
 
           const checked = repsArr[i] === true;
-
           const repKey = `${todayKey}|${r}|${ex.id}|${i}`;
+
           const holdHtml = ex.holdSec > 0 ? `
             <div class="holdWrap">
               <span class="holdTime" id="t_${cssSafe(repKey)}">${formatSS(ex.holdSec)}</span>
@@ -372,7 +444,7 @@ exercises: [
             saveStore();
             updateRoundHeader(details, r);
             renderProgressLine();
-            // if checked, disable hold button
+
             if (ex.holdSec > 0) {
               const btn = cell.querySelector(".holdBtn");
               const lbl = cell.querySelector(".holdTime");
@@ -417,13 +489,16 @@ exercises: [
 
   function updateRoundHeader(detailsEl, roundIndex) {
     const pct = roundCompletion(todayKey, roundIndex);
+    const pain = store.days[todayKey].painScores?.[roundIndex];
+    const painText = (pain === null || pain === undefined) ? "" : ` • Pain ${pain}/10`;
+
     const badge = detailsEl.querySelector(".badge");
-    if (badge) badge.textContent = (pct === 100 ? "✅ Complete" : `${pct}%`);
+    if (badge) badge.textContent = (pct === 100 ? "✅ Complete" : `${pct}%`) + painText;
   }
 
   // -------------------- Timers --------------------
   function startCountdown(repKey, seconds, onDone) {
-    // If already running, stop it
+    // stop existing timer for this rep
     if (timers.has(repKey)) stopTimer(repKey, false);
 
     const label = document.getElementById("t_" + cssSafe(repKey));
@@ -434,11 +509,14 @@ exercises: [
     label.textContent = formatSS(remaining);
     btn.textContent = "Stop";
 
+    cueStart();
+
     const interval = setInterval(() => {
       remaining -= 1;
       label.textContent = formatSS(Math.max(0, remaining));
       if (remaining <= 0) {
         stopTimer(repKey, false);
+        cueDone();
         onDone?.();
       }
     }, 1000);
@@ -456,11 +534,9 @@ exercises: [
     const btn = document.getElementById("b_" + cssSafe(repKey));
     if (btn) {
       btn.textContent = "Start";
-      // restore default click later via re-render; keep simple:
       btn.onclick = null;
     }
     if (resetLabel && label) {
-      // try to infer exercise default from key
       const parts = repKey.split("|");
       const exId = parts[2];
       const ex = PROGRAM.exercises.find(e => e.id === exId);
@@ -473,7 +549,6 @@ exercises: [
   }
 
   function cssSafe(str) {
-    // simple transform to valid id fragments
     return str.replaceAll("|","_").replaceAll(":","_").replaceAll(" ","_");
   }
 
@@ -488,14 +563,16 @@ exercises: [
     const rows = keys.map(k => {
       const { done, total, pct } = computeProgress(k);
       const complete = pct === 100 ? "✅" : "";
-      return { date: k, done, total, pct, complete };
+      const pains = (store.days[k].painScores || []).filter(v => typeof v === "number");
+      const avgPain = pains.length ? Math.round((pains.reduce((a,b)=>a+b,0)/pains.length) * 10) / 10 : null;
+      return { date: k, done, total, pct, complete, avgPain };
     });
 
     historyWrap.innerHTML = `
       <div class="card">
         <table>
           <thead>
-            <tr><th>Date</th><th>Progress</th><th>Percent</th></tr>
+            <tr><th>Date</th><th>Progress</th><th>Percent</th><th>Pain</th></tr>
           </thead>
           <tbody>
             ${rows.map(r => `
@@ -503,6 +580,7 @@ exercises: [
                 <td><b>${escapeHtml(r.date)}</b> <span class="muted">${r.complete}</span></td>
                 <td>${r.done}/${r.total}</td>
                 <td>${r.pct}%</td>
+                <td>${r.avgPain === null ? "—" : `${r.avgPain}/10`}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -511,7 +589,7 @@ exercises: [
     `;
   }
 
-  // -------------------- Settings (read-only for now) --------------------
+  // -------------------- Settings --------------------
   function renderSettings() {
     programGrid.innerHTML = "";
     for (const ex of PROGRAM.exercises) {
@@ -523,6 +601,7 @@ exercises: [
           ${ex.reps} reps
           ${ex.holdSec > 0 ? ` • ${ex.holdSec}s ${escapeHtml(ex.holdLabel)}` : " • no hold"}
         </div>
+        <div class="muted small" style="margin-top:6px;">${escapeHtml(ex.description)}</div>
       `;
       programGrid.appendChild(card);
     }
@@ -538,13 +617,8 @@ exercises: [
         document.querySelectorAll(".tabpane").forEach(p => p.hidden = true);
         $("#" + target).hidden = false;
 
-        if (target === "today") {
-          // no-op
-        } else if (target === "history") {
-          renderHistory();
-        } else if (target === "settings") {
-          renderSettings();
-        }
+        if (target === "history") renderHistory();
+        if (target === "settings") renderSettings();
       });
     });
   }
@@ -552,13 +626,13 @@ exercises: [
   $("#expandAllBtn").addEventListener("click", () => {
     document.querySelectorAll("details.round").forEach(d => d.open = true);
   });
+
   $("#collapseAllBtn").addEventListener("click", () => {
     document.querySelectorAll("details.round").forEach(d => d.open = false);
   });
 
   $("#resetTodayBtn").addEventListener("click", () => {
-    if (!confirm("Reset all checkboxes for today?")) return;
-    // stop all timers
+    if (!confirm("Reset all checkboxes and pain scores for today?")) return;
     for (const k of Array.from(timers.keys())) stopTimer(k, false);
     delete store.days[todayKey];
     ensureDay(todayKey);
