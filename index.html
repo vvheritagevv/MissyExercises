@@ -118,11 +118,13 @@
         <div class="muted">Complete 4 rounds today. Progress auto-saves.</div>
         <div class="muted small" id="progressLine"></div>
       </div>
-      <div class="row">
-        <button class="btn" id="expandAllBtn">Expand all</button>
-        <button class="btn" id="collapseAllBtn">Collapse all</button>
-        <button class="btn danger" id="resetTodayBtn">Reset today</button>
-      </div>
+<div class="row">
+  <button class="btn" id="exportPdfBtn">Export PDF</button>
+  <button class="btn" id="expandAllBtn">Expand all</button>
+  <button class="btn" id="collapseAllBtn">Collapse all</button>
+  <button class="btn danger" id="resetTodayBtn">Reset today</button>
+</div>
+
     </div>
 
     <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px;" id="roundsWrap"></div>
@@ -645,6 +647,7 @@
     localStorage.removeItem(LS_KEY);
     location.reload();
   });
+$("#exportPdfBtn").addEventListener("click", () => exportDayToPdf(todayKey));
 
   // -------------------- Utils --------------------
   function escapeHtml(str) {
@@ -662,6 +665,134 @@
       try { await navigator.serviceWorker.register("./sw.js"); } catch {}
     });
   }
+// -------------------- Export to PDF (Print) --------------------
+function exportDayToPdf(dayKey) {
+  ensureDay(dayKey); // in case user exports before any interaction
+  const day = store.days[dayKey];
+  if (!day) {
+    alert("No data for that day.");
+    return;
+  }
+
+  const reportHtml = buildReportHTML(dayKey);
+  const w = window.open("", "_blank");
+  if (!w) {
+    alert("Popup blocked. Allow popups to export PDF.");
+    return;
+  }
+  w.document.open();
+  w.document.write(reportHtml);
+  w.document.close();
+
+  // Give the new window time to render before printing
+  w.addEventListener("load", () => {
+    w.focus();
+    w.print();
+  });
+}
+
+function buildReportHTML(dayKey) {
+  const day = store.days[dayKey];
+  const d = new Date(day.createdAt || Date.now());
+
+  const prog = computeProgress(dayKey);
+
+  // Average pain for the day
+  const pains = (day.painScores || []).filter(v => typeof v === "number");
+  const avgPain = pains.length
+    ? Math.round((pains.reduce((a,b)=>a+b,0)/pains.length) * 10) / 10
+    : null;
+
+  // Build per-round tables
+  const roundsHtml = Array.from({ length: PROGRAM.circuitsPerDay }, (_, r) => {
+    const pain = day.painScores?.[r];
+    const roundPct = roundCompletion(dayKey, r);
+
+    const rows = PROGRAM.exercises.map(ex => {
+      const repsArr = day.rounds[r][ex.id].reps;
+      const done = repsArr.filter(Boolean).length;
+      const total = repsArr.length;
+      return `
+        <tr>
+          <td>${escapeHtml(ex.name)}</td>
+          <td>${escapeHtml(ex.description)}</td>
+          <td>${total}</td>
+          <td>${done}</td>
+          <td>${ex.holdSec > 0 ? `${ex.holdSec}s` : "—"}</td>
+        </tr>
+      `;
+    }).join("");
+
+    return `
+      <section class="round">
+        <h3>Round ${r+1} — ${roundPct}% ${pain === null || pain === undefined ? "" : ` • Pain ${pain}/10`}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Exercise</th>
+              <th>Description</th>
+              <th>Reps</th>
+              <th>Completed</th>
+              <th>Hold</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </section>
+    `;
+  }).join("");
+
+  return `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HEP Report ${escapeHtml(dayKey)}</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 24px; color:#111827; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    .meta { margin: 0 0 16px; color:#374151; }
+    .summary { border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; margin: 16px 0; }
+    .summary b { font-weight: 700; }
+    .round { margin-top: 18px; page-break-inside: avoid; }
+    h3 { margin: 0 0 8px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 12px; vertical-align: top; }
+    th { background: #f9fafb; }
+    .footer { margin-top: 18px; color:#6b7280; font-size: 11px; }
+    @media print {
+      body { margin: 12mm; }
+      .summary { break-inside: avoid; }
+      .round { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Home Exercise Program Report</h1>
+  <p class="meta">
+    Date: <b>${escapeHtml(dayKey)}</b> • Generated: ${escapeHtml(d.toLocaleString())}
+  </p>
+
+  <div class="summary">
+    <div><b>Total checked:</b> ${prog.done}/${prog.total} (${prog.pct}%)</div>
+    <div><b>Average pain:</b> ${avgPain === null ? "—" : `${avgPain}/10`}</div>
+  </div>
+
+  ${roundsHtml}
+
+  <div class="footer">
+    Notes: Data is stored locally on this device. Export uses your browser’s Print dialog — choose “Save as PDF”.
+  </div>
+
+  <script>
+    // Ensure consistent printing behavior in some browsers
+    window.onafterprint = () => { /* leave window open */ };
+  </script>
+</body>
+</html>
+  `;
+}
 
   // -------------------- Init --------------------
   setTodayHeader();
