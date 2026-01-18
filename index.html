@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Home Exercise Program</title>
+
   <meta name="theme-color" content="#111827" />
   <link rel="manifest" href="manifest.webmanifest" />
 
@@ -12,6 +13,7 @@
     body { margin:0; background:#0b1220; color:#e5e7eb; }
     header { padding:16px; position:sticky; top:0; background:#0b1220cc; backdrop-filter: blur(8px); border-bottom:1px solid #243045; z-index:10; }
     h1 { margin:0; font-size:18px; }
+
     .muted { color:#9ca3af; font-size:12px; }
     .small { font-size:12px; }
     main { padding:16px; max-width:1100px; margin:0 auto; }
@@ -28,36 +30,16 @@
       cursor:pointer;
     }
     .tab.active { background:#1f2a44; border-color:#3b4b6a; }
-    .btn.primary { background:#2563eb; border-color:#2563eb; }
     .btn.danger { background:#b91c1c; border-color:#b91c1c; }
     .btn:disabled { opacity:.6; cursor:not-allowed; }
 
     .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .spaced { justify-content:space-between; }
 
-    .card {
-      background:#0f1a2e;
-      border:1px solid #243045;
-      border-radius:14px;
-      padding:12px;
-    }
+    .card { background:#0f1a2e; border:1px solid #243045; border-radius:14px; padding:12px; }
 
-    details.round {
-      background:#0f1a2e;
-      border:1px solid #243045;
-      border-radius:14px;
-      overflow:hidden;
-    }
-
-    summary {
-      list-style:none;
-      cursor:pointer;
-      padding:12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
+    details.round { background:#0f1a2e; border:1px solid #243045; border-radius:14px; overflow:hidden; }
+    summary { list-style:none; cursor:pointer; padding:12px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
     summary::-webkit-details-marker { display:none; }
 
     .badge {
@@ -70,59 +52,18 @@
       color:#cbd5e1;
     }
 
-    .exTitle { font-weight:600; }
-    .exMeta { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
-
-    /* ---------- Rep grid ---------- */
-    .repGrid {
-      display:grid;
-      grid-template-columns:repeat(5, minmax(0,1fr));
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .repCell {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:10px;
-      border:1px solid #243045;
-      border-radius:12px;
-      background:#0b1220;
-      flex-wrap:wrap;
-    }
-
-    .repCell input { width:18px; height:18px; }
+    .repGrid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px; }
+    .repCell { display:flex; gap:8px; align-items:center; padding:10px; border:1px solid #243045; border-radius:12px; background:#0b1220; flex-wrap:wrap; }
     .repNum { font-size:12px; color:#cbd5e1; }
 
-    .holdWrap {
-      display:flex;
-      gap:8px;
-      width:100%;
-      justify-content:flex-end;
-      align-items:center;
-    }
+    .holdWrap { width:100%; display:flex; justify-content:flex-end; gap:8px; }
+    .holdBtn { padding:8px 10px; font-size:12px; }
 
-    .holdTime { font-size:12px; color:#cbd5e1; }
-    .holdBtn {
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid #243045;
-      background:#111b2f;
-      color:#e5e7eb;
-      cursor:pointer;
-      font-size:12px;
-    }
-
-    @media (max-width:420px) {
-      .repGrid { grid-template-columns:repeat(3, minmax(0,1fr)); }
-    }
-    @media (min-width:421px) and (max-width:720px) {
-      .repGrid { grid-template-columns:repeat(4, minmax(0,1fr)); }
-    }
+    @media (max-width:420px){ .repGrid{ grid-template-columns:repeat(3,1fr);} }
+    @media (min-width:421px) and (max-width:720px){ .repGrid{ grid-template-columns:repeat(4,1fr);} }
 
     table { width:100%; border-collapse:collapse; margin-top:12px; }
-    th, td { border-bottom:1px solid #243045; padding:8px; font-size:13px; text-align:left; }
+    th,td { border-bottom:1px solid #243045; padding:8px; font-size:13px; }
   </style>
 </head>
 
@@ -139,232 +80,154 @@
 </header>
 
 <main>
-  <!-- TODAY -->
-  <section id="today" class="tabpane">
-    <div class="row spaced">
-      <div>
-        <div class="muted">4 rounds per day — progress auto-saves</div>
-        <div class="muted small" id="progressLine"></div>
-      </div>
-      <div class="row">
-        <button class="btn" id="exportPdfBtn">Export PDF</button>
-        <button class="btn" id="expandAllBtn">Expand all</button>
-        <button class="btn" id="collapseAllBtn">Collapse all</button>
-        <button class="btn danger" id="resetTodayBtn">Reset today</button>
-      </div>
+<section id="today">
+  <div class="row spaced">
+    <div>
+      <div class="muted">4 rounds per day • progress auto-saves</div>
+      <div class="muted small" id="progressLine"></div>
     </div>
-
-    <div id="roundsWrap" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>
-
-    <div class="muted small" style="margin-top:12px;">
-      Hold timers play a beep at start and completion. Reps auto-check when holds finish.
+    <div class="row">
+      <button class="btn" id="installBtn" hidden>Install App</button>
+      <button class="btn" id="exportPdfBtn">Export PDF</button>
+      <button class="btn" id="expandAllBtn">Expand</button>
+      <button class="btn" id="collapseAllBtn">Collapse</button>
+      <button class="btn danger" id="resetTodayBtn">Reset</button>
     </div>
-  </section>
+  </div>
 
-  <!-- HISTORY -->
-  <section id="history" class="tabpane" hidden>
-    <div class="row spaced">
-      <div class="muted">Daily summary</div>
-      <button class="btn danger" id="deleteAllBtn">Delete all data</button>
-    </div>
-    <div id="historyWrap" style="margin-top:12px;"></div>
-  </section>
+  <div id="roundsWrap" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>
+</section>
 
-  <!-- SETTINGS -->
-  <section id="settings" class="tabpane" hidden>
-    <div class="card">
-      <div class="muted">Program details</div>
-      <div id="programGrid" style="margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;"></div>
-    </div>
-  </section>
+<section id="history" hidden>
+  <div class="row spaced">
+    <div class="muted">History</div>
+    <button class="btn danger" id="deleteAllBtn">Delete All</button>
+  </div>
+  <div id="historyWrap"></div>
+</section>
+
+<section id="settings" hidden>
+  <div class="card">
+    <div class="muted">Program overview</div>
+    <div id="programGrid" style="margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;"></div>
+  </div>
+</section>
 </main>
 
 <script>
-/* ============================================================
-   DATA + PROGRAM
-============================================================ */
-const LS_KEY = "hep_pwa_v3";
-
-const PROGRAM = {
-  circuitsPerDay: 4,
-  exercises: [
-    { id:"heel", name:"Supine Heel Slide", reps:10, hold:5, desc:"Slide heel toward buttocks, bend knee, hold briefly, then straighten." },
-    { id:"gluteSet", name:"Gluteal Set", reps:10, hold:10, desc:"Tighten glute muscles without moving legs." },
-    { id:"quadSet", name:"Quad Set", reps:10, hold:10, desc:"Tighten thigh by pressing knee downward." },
-    { id:"slr", name:"Straight Leg Raise (Flexion)", reps:10, hold:0, desc:"Lift straight leg to opposite knee height, lower slowly." },
-    { id:"bridge", name:"Glute Bridge", reps:10, hold:10, desc:"Lift hips by squeezing glutes, hold, then lower." },
-    { id:"laq", name:"Eccentric Long Arc Quad", reps:10, hold:0, desc:"Straighten knee fully, then slowly lower." },
-    { id:"ankle", name:"Ankle Pumps", reps:10, hold:0, desc:"Pump ankle up and down through full range." }
-  ]
+/* ================= INSTALL ================= */
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  installBtn.hidden=false;
+});
+installBtn.onclick=async()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt=null;
+  installBtn.hidden=true;
 };
 
-let store = JSON.parse(localStorage.getItem(LS_KEY) || '{"days":{}}');
-
-/* ============================================================
-   AUDIO CUES
-============================================================ */
+/* ================= AUDIO ================= */
 let audioCtx;
-function beep(freq=800, ms=120) {
-  audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.frequency.value = freq;
-  g.gain.value = 0.05;
+function beep(freq=800,ms=120){
+  audioCtx ||= new (window.AudioContext||webkitAudioContext)();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.frequency.value=freq; g.gain.value=.05;
   o.connect(g); g.connect(audioCtx.destination);
-  o.start();
-  setTimeout(()=>o.stop(), ms);
+  o.start(); setTimeout(()=>o.stop(),ms);
 }
 
-/* ============================================================
-   UTIL
-============================================================ */
-const $ = s => document.querySelector(s);
-const todayKey = new Date().toISOString().slice(0,10);
+/* ================= DATA ================= */
+const LS="hep_android_pwa";
+const PROGRAM=[
+ ["heel","Supine Heel Slide",10,5],
+ ["glute","Gluteal Set",10,10],
+ ["quad","Quad Set",10,10],
+ ["slr","Straight Leg Raise",10,0],
+ ["bridge","Glute Bridge",10,10],
+ ["laq","Eccentric Long Arc Quad",10,0],
+ ["ankle","Ankle Pumps",10,0]
+];
 
-function ensureDay() {
-  if (store.days[todayKey]) return;
-  store.days[todayKey] = {
-    rounds: Array.from({length:4},()=>Object.fromEntries(PROGRAM.exercises.map(e=>[e.id,Array(e.reps).fill(false)]))),
-    pain: Array(4).fill(null),
-    created: Date.now()
-  };
-  save();
-}
+let store=JSON.parse(localStorage.getItem(LS)||"{}");
+const today=new Date().toISOString().slice(0,10);
+store[today]??={ rounds:Array.from({length:4},()=>Object.fromEntries(PROGRAM.map(e=>[e[0],Array(e[2]).fill(false)]))), pain:Array(4).fill(null) };
 
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(store)); }
+function save(){ localStorage.setItem(LS,JSON.stringify(store)); }
 
-/* ============================================================
-   RENDERING
-============================================================ */
-function renderToday(){
-  ensureDay();
-  const wrap=$("#roundsWrap"); wrap.innerHTML="";
-  const day=store.days[todayKey];
+/* ================= RENDER ================= */
+const $=s=>document.querySelector(s);
+todayLine.textContent=`Today: ${today}`;
 
-  day.rounds.forEach((round,r)=>{
-    const done=roundCompletion(r);
-    const pain=day.pain[r];
-    const details=document.createElement("details");
-    details.className="round";
-    details.open=r===0;
-    details.innerHTML=`
-      <summary>
-        <div class="row"><b>Round ${r+1}</b><span class="badge">${done}%${pain!=null?` • Pain ${pain}/10`:""}</span></div>
-        <span class="muted small">tap</span>
-      </summary>
-      <div style="padding:12px; display:flex; flex-direction:column; gap:12px;"></div>
-    `;
-    const inner=details.querySelector("div");
+function render(){
+  roundsWrap.innerHTML="";
+  let done=0,total=0;
+  store[today].rounds.forEach((round,r)=>{
+    const d=document.createElement("details");
+    d.className="round"; d.open=r===0;
+    d.innerHTML=`<summary><b>Round ${r+1}</b><span class="badge">${store[today].pain[r]!=null?`Pain ${store[today].pain[r]}/10`:""}</span></summary><div></div>`;
+    const body=d.querySelector("div");
 
-    /* pain selector */
-    const painCard=document.createElement("div");
-    painCard.className="card";
-    painCard.innerHTML=`
-      <div class="row spaced">
-        <div><b>Pain score (0–10)</b></div>
-        <select>${["","0","1","2","3","4","5","6","7","8","9","10"].map(v=>`<option ${v==pain?"selected":""}>${v}</option>`).join("")}</select>
-      </div>`;
-    painCard.querySelector("select").onchange=e=>{
-      day.pain[r]=e.target.value===""?null:+e.target.value;
-      save(); renderToday();
-    };
-    inner.appendChild(painCard);
+    const pain=document.createElement("div");
+    pain.className="card";
+    pain.innerHTML=`Pain (0–10): <select>${["","0","1","2","3","4","5","6","7","8","9","10"].map(v=>`<option ${v==store[today].pain[r]?"selected":""}>${v}</option>`).join("")}</select>`;
+    pain.querySelector("select").onchange=e=>{store[today].pain[r]=e.target.value===""?null:+e.target.value;save();render();};
+    body.appendChild(pain);
 
-    PROGRAM.exercises.forEach(ex=>{
-      const card=document.createElement("div");
-      card.className="card";
-      card.innerHTML=`
-        <div class="exTitle">${ex.name}</div>
-        <div class="muted small">${ex.desc}</div>
-        <div class="exMeta"><span class="badge">${ex.reps} reps</span>${ex.hold?`<span class="badge">${ex.hold}s hold</span>`:""}</div>
-        <div class="repGrid"></div>`;
-      const grid=card.querySelector(".repGrid");
-
-      round[ex.id].forEach((v,i)=>{
-        const cell=document.createElement("div");
-        cell.className="repCell";
-        cell.innerHTML=`<input type="checkbox" ${v?"checked":""}><span class="repNum">#${i+1}</span>`;
-        const cb=cell.querySelector("input");
-        cb.onchange=()=>{ round[ex.id][i]=cb.checked; save(); renderToday(); };
-        if(ex.hold){
-          const hw=document.createElement("div");
-          hw.className="holdWrap";
-          const btn=document.createElement("button");
-          btn.className="holdBtn";
-          btn.textContent="Start";
-          btn.onclick=()=>{
-            let t=ex.hold;
-            btn.textContent=`${t}s`;
-            beep(500,80);
-            const iv=setInterval(()=>{
-              t--; btn.textContent=`${t}s`;
-              if(t<=0){ clearInterval(iv); beep(900,120); cb.checked=true; cb.onchange(); }
-            },1000);
+    PROGRAM.forEach(ex=>{
+      const c=document.createElement("div"); c.className="card";
+      c.innerHTML=`<b>${ex[1]}</b><div class="repGrid"></div>`;
+      const g=c.querySelector(".repGrid");
+      round[ex[0]].forEach((v,i)=>{
+        const cell=document.createElement("div"); cell.className="repCell";
+        const cb=document.createElement("input"); cb.type="checkbox"; cb.checked=v;
+        cb.onchange=()=>{round[ex[0]][i]=cb.checked;save();render();};
+        cell.append(cb,`#${i+1}`);
+        if(ex[3]){
+          const b=document.createElement("button");
+          b.className="btn holdBtn"; b.textContent="Start";
+          b.onclick=()=>{let t=ex[3]; beep(500,80);
+            const iv=setInterval(()=>{b.textContent=`${--t}s`; if(t<=0){clearInterval(iv);beep(900,120);cb.checked=true;cb.onchange();}},1000);
           };
-          hw.appendChild(btn);
-          cell.appendChild(hw);
+          const hw=document.createElement("div"); hw.className="holdWrap"; hw.append(b); cell.append(hw);
         }
-        grid.appendChild(cell);
+        g.append(cell);
+        total++; if(v) done++;
       });
-
-      inner.appendChild(card);
+      body.appendChild(c);
     });
-
-    wrap.appendChild(details);
+    roundsWrap.append(d);
   });
-
-  $("#progressLine").textContent=`Checked ${computeDone()}`;
+  progressLine.textContent=`Completed ${done}/${total}`;
 }
+render();
 
-function roundCompletion(r){
-  const day=store.days[todayKey];
-  let d=0,t=0;
-  PROGRAM.exercises.forEach(ex=>{
-    const a=day.rounds[r][ex.id];
-    t+=a.length; d+=a.filter(Boolean).length;
-  });
-  return Math.round(d/t*100);
-}
-
-function computeDone(){
-  const day=store.days[todayKey];
-  let d=0,t=0;
-  day.rounds.forEach((_,r)=>{
-    PROGRAM.exercises.forEach(ex=>{
-      const a=day.rounds[r][ex.id];
-      t+=a.length; d+=a.filter(Boolean).length;
-    });
-  });
-  return `${d}/${t}`;
-}
-
-/* ============================================================
-   HISTORY + PDF EXPORT
-============================================================ */
-function exportPdf(){
-  const w=window.open("","_blank");
-  w.document.write(`<pre>${JSON.stringify(store.days[todayKey],null,2)}</pre>`);
+/* ================= PDF ================= */
+exportPdfBtn.onclick=()=>{
+  const w=open("","_blank");
+  w.document.write(`<pre>${JSON.stringify(store[today],null,2)}</pre>`);
   w.print();
-}
+};
 
-/* ============================================================
-   INIT + EVENTS
-============================================================ */
-$("#todayLine").textContent=`Today: ${todayKey}`;
-$("#exportPdfBtn").onclick=exportPdf;
-$("#resetTodayBtn").onclick=()=>{ if(confirm("Reset today?")){ delete store.days[todayKey]; save(); renderToday(); }};
-$("#deleteAllBtn").onclick=()=>{ if(confirm("Delete all data?")){ localStorage.removeItem(LS_KEY); location.reload(); }};
-$("#expandAllBtn").onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=true);
-$("#collapseAllBtn").onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=false);
+/* ================= CONTROLS ================= */
+expandAllBtn.onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=true);
+collapseAllBtn.onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=false);
+resetTodayBtn.onclick=()=>{if(confirm("Reset today?")){delete store[today]; save(); location.reload();}};
+deleteAllBtn.onclick=()=>{if(confirm("Delete all data?")){localStorage.clear(); location.reload();}};
 
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  document.querySelectorAll(".tabpane").forEach(p=>p.hidden=true);
-  $("#"+b.dataset.tab).hidden=false;
+  t.classList.add("active");
+  document.querySelectorAll("main section").forEach(s=>s.hidden=true);
+  $("#"+t.dataset.tab).hidden=false;
 });
 
-renderToday();
+/* ================= SERVICE WORKER ================= */
+if("serviceWorker"in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
 </script>
 </body>
 </html>
