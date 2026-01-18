@@ -152,15 +152,65 @@
 
   const PROGRAM = {
     circuitsPerDay: 4,
-    exercises: [
-      { id: "heel_slide",  name: "Supine Heel Slide", reps: 10, holdSec: 5,  holdLabel: "hold at top" },
-      { id: "glute_set",   name: "Gluteal Set",       reps: 10, holdSec: 10, holdLabel: "hold contraction" },
-      { id: "quad_set",    name: "Quad Set",          reps: 10, holdSec: 10, holdLabel: "hold contraction" },
-      { id: "slr_flex",    name: "Straight Leg Raise (Flexion)", reps: 10, holdSec: 0, holdLabel: "" },
-      { id: "glute_bridge",name: "Glute Bridge",      reps: 10, holdSec: 10, holdLabel: "hold contraction" },
-      { id: "laq_ecc",     name: "Eccentric Long Arc Quad (Leg Extension)", reps: 10, holdSec: 0, holdLabel: "" },
-      { id: "ankle_pumps", name: "Ankle Pumps",       reps: 10, holdSec: 0, holdLabel: "" }
-    ]
+exercises: [
+  {
+    id: "heel_slide",
+    name: "Supine Heel Slide",
+    reps: 10,
+    holdSec: 5,
+    holdLabel: "hold at top",
+    description: "Lie on your back and slowly slide your heel toward your buttocks, bending the knee. Hold briefly at the top, then slowly straighten the leg."
+  },
+  {
+    id: "glute_set",
+    name: "Gluteal Set",
+    reps: 10,
+    holdSec: 10,
+    holdLabel: "hold contraction",
+    description: "Tighten your buttock muscles while keeping your legs relaxed. Focus on squeezing evenly without holding your breath."
+  },
+  {
+    id: "quad_set",
+    name: "Quad Set",
+    reps: 10,
+    holdSec: 10,
+    holdLabel: "hold contraction",
+    description: "With the leg straight, tighten the thigh muscle by pressing the knee down toward the surface beneath you."
+  },
+  {
+    id: "slr_flex",
+    name: "Straight Leg Raise (Flexion)",
+    reps: 10,
+    holdSec: 0,
+    holdLabel: "",
+    description: "Keep one knee bent and the other straight. Lift the straight leg to the height of the opposite knee, then slowly lower."
+  },
+  {
+    id: "glute_bridge",
+    name: "Glute Bridge",
+    reps: 10,
+    holdSec: 10,
+    holdLabel: "hold contraction",
+    description: "Lie on your back with knees bent. Squeeze your glutes and lift your hips until your body forms a straight line from shoulders to knees."
+  },
+  {
+    id: "laq_ecc",
+    name: "Eccentric Long Arc Quad (Leg Extension)",
+    reps: 10,
+    holdSec: 0,
+    holdLabel: "",
+    description: "From a seated position, straighten the knee fully, then slowly lower the leg back down with control."
+  },
+  {
+    id: "ankle_pumps",
+    name: "Ankle Pumps",
+    reps: 10,
+    holdSec: 0,
+    holdLabel: "",
+    description: "Move your ankle up toward your head and then down away from you, pumping through full comfortable range."
+  }
+]
+
   };
 
   // Data structure:
@@ -284,9 +334,13 @@
 
         card.innerHTML = `
           <div class="exTitle">${escapeHtml(ex.name)}</div>
+          <div class="muted small" style="margin-top:4px;">
+          ${escapeHtml(ex.description)}
+          </div>
           <div class="exMeta">${meta}</div>
           <div class="repGrid" data-round="${r}" data-ex="${ex.id}"></div>
-        `;
+`;
+
 
         const repGrid = card.querySelector(".repGrid");
         const repsArr = day.rounds[r][ex.id].reps;
