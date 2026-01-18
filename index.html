@@ -6,104 +6,131 @@
   <title>Home Exercise Program</title>
   <meta name="theme-color" content="#111827" />
   <link rel="manifest" href="manifest.webmanifest" />
+
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body { margin: 0; background:#0b1220; color:#e5e7eb; }
-    header { padding:16px; position:sticky; top:0; background:rgba(11,18,32,.9); backdrop-filter: blur(10px); border-bottom:1px solid #243045; z-index:10; }
+    body { margin:0; background:#0b1220; color:#e5e7eb; }
+    header { padding:16px; position:sticky; top:0; background:#0b1220cc; backdrop-filter: blur(8px); border-bottom:1px solid #243045; z-index:10; }
     h1 { margin:0; font-size:18px; }
     .muted { color:#9ca3af; font-size:12px; }
-    main { padding:16px; max-width: 1100px; margin: 0 auto; }
+    .small { font-size:12px; }
+    main { padding:16px; max-width:1100px; margin:0 auto; }
 
     .tabs { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-    button, input, select { font: inherit; }
-    .tab { padding:10px 12px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; }
+    button, input, select { font:inherit; }
+
+    .tab, .btn {
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #243045;
+      background:#111b2f;
+      color:#e5e7eb;
+      cursor:pointer;
+    }
     .tab.active { background:#1f2a44; border-color:#3b4b6a; }
-
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .spaced { justify-content:space-between; }
-
-    .card { background:#0f1a2e; border:1px solid #243045; border-radius:14px; padding:12px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px; }
-
-    .btn { padding:10px 12px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; }
     .btn.primary { background:#2563eb; border-color:#2563eb; }
     .btn.danger { background:#b91c1c; border-color:#b91c1c; }
     .btn:disabled { opacity:.6; cursor:not-allowed; }
 
-    details.round { background:#0f1a2e; border:1px solid #243045; border-radius:14px; overflow:hidden; }
-    summary { list-style:none; cursor:pointer; padding:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .spaced { justify-content:space-between; }
+
+    .card {
+      background:#0f1a2e;
+      border:1px solid #243045;
+      border-radius:14px;
+      padding:12px;
+    }
+
+    details.round {
+      background:#0f1a2e;
+      border:1px solid #243045;
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    summary {
+      list-style:none;
+      cursor:pointer;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
     summary::-webkit-details-marker { display:none; }
-    .badge { display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid #243045; background:#111b2f; font-size:12px; color:#cbd5e1; }
+
+    .badge {
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #243045;
+      background:#111b2f;
+      font-size:12px;
+      color:#cbd5e1;
+    }
 
     .exTitle { font-weight:600; }
     .exMeta { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
 
-    /* ---------- Responsive rep grid + hold controls ---------- */
+    /* ---------- Rep grid ---------- */
     .repGrid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:8px;
+      margin-top:10px;
     }
 
     .repCell {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px;
-      border: 1px solid #243045;
-      border-radius: 12px;
-      background: #0b1220;
-      flex-wrap: wrap;              /* allow wrap so Start button never clips */
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px;
+      border:1px solid #243045;
+      border-radius:12px;
+      background:#0b1220;
+      flex-wrap:wrap;
     }
 
-    .repCell input[type="checkbox"] { width:18px; height:18px; }
-    .repNum { font-size:12px; color:#cbd5e1; min-width:20px; }
+    .repCell input { width:18px; height:18px; }
+    .repNum { font-size:12px; color:#cbd5e1; }
 
     .holdWrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 0;               /* don't push off-screen */
-      width: 100%;                  /* naturally moves to a new line */
-      justify-content: flex-end;    /* align right within the cell */
+      display:flex;
+      gap:8px;
+      width:100%;
+      justify-content:flex-end;
+      align-items:center;
     }
 
-    .holdTime {
-      font-variant-numeric: tabular-nums;
-      font-size: 12px;
-      color: #cbd5e1;
-      min-width: 0;                 /* avoid clipping */
-      text-align: right;
-    }
-
+    .holdTime { font-size:12px; color:#cbd5e1; }
     .holdBtn {
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #243045;
-      background: #111b2f;
-      color: #e5e7eb;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .holdBtn:disabled { opacity:.6; cursor:not-allowed; }
-
-    @media (max-width: 420px) {
-      .repGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    @media (min-width: 421px) and (max-width: 720px) {
-      .repGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #243045;
+      background:#111b2f;
+      color:#e5e7eb;
+      cursor:pointer;
+      font-size:12px;
     }
 
-    table { width:100%; border-collapse: collapse; margin-top:12px; }
-    th, td { text-align:left; padding:10px; border-bottom:1px solid #243045; font-size:14px; vertical-align:top; }
-    .small { font-size:12px; }
+    @media (max-width:420px) {
+      .repGrid { grid-template-columns:repeat(3, minmax(0,1fr)); }
+    }
+    @media (min-width:421px) and (max-width:720px) {
+      .repGrid { grid-template-columns:repeat(4, minmax(0,1fr)); }
+    }
+
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    th, td { border-bottom:1px solid #243045; padding:8px; font-size:13px; text-align:left; }
   </style>
 </head>
+
 <body>
 <header>
   <h1>Home Exercise Program</h1>
   <div class="muted" id="todayLine"></div>
+
   <div class="tabs">
     <button class="tab active" data-tab="today">Today</button>
     <button class="tab" data-tab="history">History</button>
@@ -112,692 +139,232 @@
 </header>
 
 <main>
+  <!-- TODAY -->
   <section id="today" class="tabpane">
     <div class="row spaced">
       <div>
-        <div class="muted">Complete 4 rounds today. Progress auto-saves.</div>
+        <div class="muted">4 rounds per day — progress auto-saves</div>
         <div class="muted small" id="progressLine"></div>
       </div>
-<div class="row">
-  <button class="btn" id="exportPdfBtn">Export PDF</button>
-  <button class="btn" id="expandAllBtn">Expand all</button>
-  <button class="btn" id="collapseAllBtn">Collapse all</button>
-  <button class="btn danger" id="resetTodayBtn">Reset today</button>
-</div>
-
+      <div class="row">
+        <button class="btn" id="exportPdfBtn">Export PDF</button>
+        <button class="btn" id="expandAllBtn">Expand all</button>
+        <button class="btn" id="collapseAllBtn">Collapse all</button>
+        <button class="btn danger" id="resetTodayBtn">Reset today</button>
+      </div>
     </div>
 
-    <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px;" id="roundsWrap"></div>
+    <div id="roundsWrap" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>
 
     <div class="muted small" style="margin-top:12px;">
-      Hold exercises: tap <b>Start</b> to run the countdown. When it hits 0, that rep is auto-checked and you’ll hear a cue.
+      Hold timers play a beep at start and completion. Reps auto-check when holds finish.
     </div>
   </section>
 
+  <!-- HISTORY -->
   <section id="history" class="tabpane" hidden>
     <div class="row spaced">
-      <div class="muted">Daily completion summary</div>
+      <div class="muted">Daily summary</div>
       <button class="btn danger" id="deleteAllBtn">Delete all data</button>
     </div>
     <div id="historyWrap" style="margin-top:12px;"></div>
   </section>
 
+  <!-- SETTINGS -->
   <section id="settings" class="tabpane" hidden>
     <div class="card">
-      <div class="muted">Program (fixed to your plan)</div>
-      <div class="grid" id="programGrid" style="margin-top:12px;"></div>
-      <div class="muted small" style="margin-top:12px;">
-        Audio: beeps on timer start + finish. Pain score: stored per round (0–10).
-      </div>
+      <div class="muted">Program details</div>
+      <div id="programGrid" style="margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;"></div>
     </div>
   </section>
 </main>
 
 <script>
-  // -------------------- Model --------------------
-  const LS_KEY = "hep_checklist_pwa_v2";
+/* ============================================================
+   DATA + PROGRAM
+============================================================ */
+const LS_KEY = "hep_pwa_v3";
 
-  const PROGRAM = {
-    circuitsPerDay: 4,
-    exercises: [
-      {
-        id: "heel_slide",
-        name: "Supine Heel Slide",
-        reps: 10,
-        holdSec: 5,
-        holdLabel: "hold at top",
-        description: "Lie on your back and slowly slide your heel toward your buttocks, bending the knee. Hold briefly at the top, then slowly straighten the leg."
-      },
-      {
-        id: "glute_set",
-        name: "Gluteal Set",
-        reps: 10,
-        holdSec: 10,
-        holdLabel: "hold contraction",
-        description: "Tighten your buttock muscles while keeping your legs relaxed. Focus on squeezing evenly without holding your breath."
-      },
-      {
-        id: "quad_set",
-        name: "Quad Set",
-        reps: 10,
-        holdSec: 10,
-        holdLabel: "hold contraction",
-        description: "With the leg straight, tighten the thigh muscle by pressing the knee down toward the surface beneath you."
-      },
-      {
-        id: "slr_flex",
-        name: "Straight Leg Raise (Flexion)",
-        reps: 10,
-        holdSec: 0,
-        holdLabel: "",
-        description: "Keep one knee bent and the other straight. Lift the straight leg to the height of the opposite knee, then slowly lower."
-      },
-      {
-        id: "glute_bridge",
-        name: "Glute Bridge",
-        reps: 10,
-        holdSec: 10,
-        holdLabel: "hold contraction",
-        description: "Lie on your back with knees bent. Squeeze your glutes and lift your hips until your body forms a straight line from shoulders to knees."
-      },
-      {
-        id: "laq_ecc",
-        name: "Eccentric Long Arc Quad (Leg Extension)",
-        reps: 10,
-        holdSec: 0,
-        holdLabel: "",
-        description: "From a seated position, straighten the knee fully, then slowly lower the leg back down with control."
-      },
-      {
-        id: "ankle_pumps",
-        name: "Ankle Pumps",
-        reps: 10,
-        holdSec: 0,
-        holdLabel: "",
-        description: "Move your ankle up toward your head and then down away from you, pumping through full comfortable range."
-      }
-    ]
+const PROGRAM = {
+  circuitsPerDay: 4,
+  exercises: [
+    { id:"heel", name:"Supine Heel Slide", reps:10, hold:5, desc:"Slide heel toward buttocks, bend knee, hold briefly, then straighten." },
+    { id:"gluteSet", name:"Gluteal Set", reps:10, hold:10, desc:"Tighten glute muscles without moving legs." },
+    { id:"quadSet", name:"Quad Set", reps:10, hold:10, desc:"Tighten thigh by pressing knee downward." },
+    { id:"slr", name:"Straight Leg Raise (Flexion)", reps:10, hold:0, desc:"Lift straight leg to opposite knee height, lower slowly." },
+    { id:"bridge", name:"Glute Bridge", reps:10, hold:10, desc:"Lift hips by squeezing glutes, hold, then lower." },
+    { id:"laq", name:"Eccentric Long Arc Quad", reps:10, hold:0, desc:"Straighten knee fully, then slowly lower." },
+    { id:"ankle", name:"Ankle Pumps", reps:10, hold:0, desc:"Pump ankle up and down through full range." }
+  ]
+};
+
+let store = JSON.parse(localStorage.getItem(LS_KEY) || '{"days":{}}');
+
+/* ============================================================
+   AUDIO CUES
+============================================================ */
+let audioCtx;
+function beep(freq=800, ms=120) {
+  audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.frequency.value = freq;
+  g.gain.value = 0.05;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  setTimeout(()=>o.stop(), ms);
+}
+
+/* ============================================================
+   UTIL
+============================================================ */
+const $ = s => document.querySelector(s);
+const todayKey = new Date().toISOString().slice(0,10);
+
+function ensureDay() {
+  if (store.days[todayKey]) return;
+  store.days[todayKey] = {
+    rounds: Array.from({length:4},()=>Object.fromEntries(PROGRAM.exercises.map(e=>[e.id,Array(e.reps).fill(false)]))),
+    pain: Array(4).fill(null),
+    created: Date.now()
   };
+  save();
+}
 
-  // Data structure:
-  // {
-  //   days: {
-  //     "YYYY-MM-DD": {
-  //       createdAt,
-  //       rounds: [
-  //         { exId: { reps: [bool x 10] } ... }, ... 4 rounds
-  //       ],
-  //       painScores: [null|0..10 x 4]
-  //     }
-  //   }
-  // }
-  function loadStore() {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return { days: {} };
-    try {
-      const parsed = JSON.parse(raw);
-      parsed.days ??= {};
-      return parsed;
-    } catch {
-      return { days: {} };
-    }
-  }
-  function saveStore() { localStorage.setItem(LS_KEY, JSON.stringify(store)); }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(store)); }
 
-  const store = loadStore();
+/* ============================================================
+   RENDERING
+============================================================ */
+function renderToday(){
+  ensureDay();
+  const wrap=$("#roundsWrap"); wrap.innerHTML="";
+  const day=store.days[todayKey];
 
-  function yyyyMmDd(d = new Date()) {
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${day}`;
-  }
+  day.rounds.forEach((round,r)=>{
+    const done=roundCompletion(r);
+    const pain=day.pain[r];
+    const details=document.createElement("details");
+    details.className="round";
+    details.open=r===0;
+    details.innerHTML=`
+      <summary>
+        <div class="row"><b>Round ${r+1}</b><span class="badge">${done}%${pain!=null?` • Pain ${pain}/10`:""}</span></div>
+        <span class="muted small">tap</span>
+      </summary>
+      <div style="padding:12px; display:flex; flex-direction:column; gap:12px;"></div>
+    `;
+    const inner=details.querySelector("div");
 
-  const todayKey = yyyyMmDd();
-  ensureDay(todayKey);
-
-  function ensureDay(dayKey) {
-    if (store.days[dayKey]) return;
-
-    const rounds = [];
-    for (let r = 0; r < PROGRAM.circuitsPerDay; r++) {
-      const roundObj = {};
-      for (const ex of PROGRAM.exercises) {
-        roundObj[ex.id] = { reps: Array(ex.reps).fill(false) };
-      }
-      rounds.push(roundObj);
-    }
-
-    store.days[dayKey] = {
-      createdAt: Date.now(),
-      rounds,
-      painScores: Array(PROGRAM.circuitsPerDay).fill(null)
+    /* pain selector */
+    const painCard=document.createElement("div");
+    painCard.className="card";
+    painCard.innerHTML=`
+      <div class="row spaced">
+        <div><b>Pain score (0–10)</b></div>
+        <select>${["","0","1","2","3","4","5","6","7","8","9","10"].map(v=>`<option ${v==pain?"selected":""}>${v}</option>`).join("")}</select>
+      </div>`;
+    painCard.querySelector("select").onchange=e=>{
+      day.pain[r]=e.target.value===""?null:+e.target.value;
+      save(); renderToday();
     };
-    saveStore();
-  }
+    inner.appendChild(painCard);
 
-  // -------------------- UI --------------------
-  const $ = (s) => document.querySelector(s);
-  const roundsWrap = $("#roundsWrap");
-  const historyWrap = $("#historyWrap");
-  const programGrid = $("#programGrid");
+    PROGRAM.exercises.forEach(ex=>{
+      const card=document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <div class="exTitle">${ex.name}</div>
+        <div class="muted small">${ex.desc}</div>
+        <div class="exMeta"><span class="badge">${ex.reps} reps</span>${ex.hold?`<span class="badge">${ex.hold}s hold</span>`:""}</div>
+        <div class="repGrid"></div>`;
+      const grid=card.querySelector(".repGrid");
 
-  // Timers keyed by unique rep key: `${dayKey}|${roundIndex}|${exId}|${repIndex}`
-  const timers = new Map();
-
-  // -------------------- Audio cues --------------------
-  let audioCtx = null;
-
-  function beep({ freq = 880, durationMs = 120, volume = 0.05 } = {}) {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = freq;
-    gain.gain.value = volume;
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    setTimeout(() => {
-      osc.stop();
-      osc.disconnect();
-      gain.disconnect();
-    }, durationMs);
-  }
-
-  function cueStart() {
-    beep({ freq: 520, durationMs: 90, volume: 0.05 });
-  }
-
-  function cueDone() {
-    beep({ freq: 880, durationMs: 110, volume: 0.06 });
-    setTimeout(() => beep({ freq: 988, durationMs: 110, volume: 0.06 }), 140);
-  }
-
-  function setTodayHeader() {
-    const d = new Date();
-    $("#todayLine").textContent = `Today: ${d.toLocaleDateString()}`;
-  }
-
-  function computeProgress(dayKey) {
-    const day = store.days[dayKey];
-    let done = 0, total = 0;
-
-    for (let r = 0; r < PROGRAM.circuitsPerDay; r++) {
-      for (const ex of PROGRAM.exercises) {
-        const arr = day.rounds[r][ex.id].reps;
-        total += arr.length;
-        done += arr.filter(Boolean).length;
-      }
-    }
-    return { done, total, pct: total ? Math.round((done/total)*100) : 0 };
-  }
-
-  function renderProgressLine() {
-    const { done, total, pct } = computeProgress(todayKey);
-    $("#progressLine").textContent = `Checked: ${done}/${total} (${pct}%)`;
-  }
-
-  function renderToday() {
-    roundsWrap.innerHTML = "";
-    const day = store.days[todayKey];
-
-    for (let r = 0; r < PROGRAM.circuitsPerDay; r++) {
-      const details = document.createElement("details");
-      details.className = "round";
-      details.open = (r === 0);
-
-      const roundDone = roundCompletion(todayKey, r);
-      const pain = day.painScores?.[r];
-      const painText = (pain === null || pain === undefined) ? "" : ` • Pain ${pain}/10`;
-      const roundBadge = (roundDone === 100 ? "✅ Complete" : `${roundDone}%`) + painText;
-
-      const summary = document.createElement("summary");
-      summary.innerHTML = `
-        <div class="row" style="gap:12px;">
-          <div style="font-weight:700;">Round ${r+1}</div>
-          <span class="badge">${roundBadge}</span>
-        </div>
-        <div class="muted small">Tap to ${details.open ? "collapse" : "expand"}</div>
-      `;
-      details.appendChild(summary);
-
-      const inner = document.createElement("div");
-      inner.style.padding = "12px";
-      inner.style.display = "flex";
-      inner.style.flexDirection = "column";
-      inner.style.gap = "12px";
-
-      // Pain score control per round
-      const painRow = document.createElement("div");
-      painRow.className = "card";
-      const currentPain = day.painScores?.[r];
-
-      painRow.innerHTML = `
-        <div class="row spaced">
-          <div>
-            <div style="font-weight:600;">Pain score (0–10)</div>
-            <div class="muted small">Track how the round felt (optional)</div>
-          </div>
-          <div class="row">
-            <select id="pain_${r}" class="btn" style="padding:10px 12px;">
-              <option value="">—</option>
-              ${Array.from({length: 11}, (_, i) => `
-                <option value="${i}" ${String(currentPain)===String(i) ? "selected" : ""}>${i}</option>
-              `).join("")}
-            </select>
-          </div>
-        </div>
-      `;
-      inner.appendChild(painRow);
-
-      const painSelect = painRow.querySelector(`#pain_${r}`);
-      painSelect.addEventListener("change", () => {
-        const v = painSelect.value;
-        day.painScores[r] = (v === "" ? null : Number(v));
-        saveStore();
-        updateRoundHeader(details, r);
-      });
-
-      // Exercises
-      for (const ex of PROGRAM.exercises) {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const meta = ex.holdSec > 0
-          ? `<span class="badge">${ex.reps} reps</span><span class="badge">${ex.holdSec}s ${escapeHtml(ex.holdLabel)}</span>`
-          : `<span class="badge">${ex.reps} reps</span><span class="badge">no hold</span>`;
-
-        card.innerHTML = `
-          <div class="exTitle">${escapeHtml(ex.name)}</div>
-          <div class="muted small" style="margin-top:4px;">${escapeHtml(ex.description)}</div>
-          <div class="exMeta">${meta}</div>
-          <div class="repGrid" data-round="${r}" data-ex="${ex.id}"></div>
-        `;
-
-        const repGrid = card.querySelector(".repGrid");
-        const repsArr = day.rounds[r][ex.id].reps;
-
-        for (let i = 0; i < ex.reps; i++) {
-          const cell = document.createElement("div");
-          cell.className = "repCell";
-
-          const checked = repsArr[i] === true;
-          const repKey = `${todayKey}|${r}|${ex.id}|${i}`;
-
-          const holdHtml = ex.holdSec > 0 ? `
-            <div class="holdWrap">
-              <span class="holdTime" id="t_${cssSafe(repKey)}">${formatSS(ex.holdSec)}</span>
-              <button class="holdBtn" id="b_${cssSafe(repKey)}" ${checked ? "disabled" : ""}>Start</button>
-            </div>
-          ` : "";
-
-          cell.innerHTML = `
-            <input type="checkbox" ${checked ? "checked" : ""} aria-label="Rep ${i+1}">
-            <span class="repNum">#${i+1}</span>
-            ${holdHtml}
-          `;
-
-          const cb = cell.querySelector('input[type="checkbox"]');
-          cb.addEventListener("change", () => {
-            stopTimer(repKey, true);
-            repsArr[i] = cb.checked;
-            saveStore();
-            updateRoundHeader(details, r);
-            renderProgressLine();
-
-            if (ex.holdSec > 0) {
-              const btn = cell.querySelector(".holdBtn");
-              const lbl = cell.querySelector(".holdTime");
-              if (btn) btn.disabled = cb.checked;
-              if (lbl) lbl.textContent = formatSS(ex.holdSec);
-            }
-          });
-
-          if (ex.holdSec > 0) {
-            const btn = cell.querySelector(".holdBtn");
-            btn.addEventListener("click", () => startCountdown(repKey, ex.holdSec, () => {
-              cb.checked = true;
-              cb.dispatchEvent(new Event("change"));
-            }));
-          }
-
-          repGrid.appendChild(cell);
+      round[ex.id].forEach((v,i)=>{
+        const cell=document.createElement("div");
+        cell.className="repCell";
+        cell.innerHTML=`<input type="checkbox" ${v?"checked":""}><span class="repNum">#${i+1}</span>`;
+        const cb=cell.querySelector("input");
+        cb.onchange=()=>{ round[ex.id][i]=cb.checked; save(); renderToday(); };
+        if(ex.hold){
+          const hw=document.createElement("div");
+          hw.className="holdWrap";
+          const btn=document.createElement("button");
+          btn.className="holdBtn";
+          btn.textContent="Start";
+          btn.onclick=()=>{
+            let t=ex.hold;
+            btn.textContent=`${t}s`;
+            beep(500,80);
+            const iv=setInterval(()=>{
+              t--; btn.textContent=`${t}s`;
+              if(t<=0){ clearInterval(iv); beep(900,120); cb.checked=true; cb.onchange(); }
+            },1000);
+          };
+          hw.appendChild(btn);
+          cell.appendChild(hw);
         }
-
-        inner.appendChild(card);
-      }
-
-      details.appendChild(inner);
-      roundsWrap.appendChild(details);
-
-      details.addEventListener("toggle", () => updateRoundHeader(details, r));
-    }
-
-    renderProgressLine();
-  }
-
-  function roundCompletion(dayKey, roundIndex) {
-    const day = store.days[dayKey];
-    let done = 0, total = 0;
-    for (const ex of PROGRAM.exercises) {
-      const arr = day.rounds[roundIndex][ex.id].reps;
-      total += arr.length;
-      done += arr.filter(Boolean).length;
-    }
-    return total ? Math.round((done/total)*100) : 0;
-  }
-
-  function updateRoundHeader(detailsEl, roundIndex) {
-    const pct = roundCompletion(todayKey, roundIndex);
-    const pain = store.days[todayKey].painScores?.[roundIndex];
-    const painText = (pain === null || pain === undefined) ? "" : ` • Pain ${pain}/10`;
-
-    const badge = detailsEl.querySelector(".badge");
-    if (badge) badge.textContent = (pct === 100 ? "✅ Complete" : `${pct}%`) + painText;
-  }
-
-  // -------------------- Timers --------------------
-  function startCountdown(repKey, seconds, onDone) {
-    // stop existing timer for this rep
-    if (timers.has(repKey)) stopTimer(repKey, false);
-
-    const label = document.getElementById("t_" + cssSafe(repKey));
-    const btn = document.getElementById("b_" + cssSafe(repKey));
-    if (!label || !btn) return;
-
-    let remaining = seconds;
-    label.textContent = formatSS(remaining);
-    btn.textContent = "Stop";
-
-    cueStart();
-
-    const interval = setInterval(() => {
-      remaining -= 1;
-      label.textContent = formatSS(Math.max(0, remaining));
-      if (remaining <= 0) {
-        stopTimer(repKey, false);
-        cueDone();
-        onDone?.();
-      }
-    }, 1000);
-
-    btn.onclick = () => stopTimer(repKey, false);
-    timers.set(repKey, { interval, seconds });
-  }
-
-  function stopTimer(repKey, resetLabel) {
-    const t = timers.get(repKey);
-    if (t?.interval) clearInterval(t.interval);
-    timers.delete(repKey);
-
-    const label = document.getElementById("t_" + cssSafe(repKey));
-    const btn = document.getElementById("b_" + cssSafe(repKey));
-    if (btn) {
-      btn.textContent = "Start";
-      btn.onclick = null;
-    }
-    if (resetLabel && label) {
-      const parts = repKey.split("|");
-      const exId = parts[2];
-      const ex = PROGRAM.exercises.find(e => e.id === exId);
-      if (ex && ex.holdSec > 0) label.textContent = formatSS(ex.holdSec);
-    }
-  }
-
-  function formatSS(sec) {
-    return String(sec).padStart(2, "0") + "s";
-  }
-
-  function cssSafe(str) {
-    return str.replaceAll("|","_").replaceAll(":","_").replaceAll(" ","_");
-  }
-
-  // -------------------- History --------------------
-  function renderHistory() {
-    const keys = Object.keys(store.days).sort().reverse();
-    if (!keys.length) {
-      historyWrap.innerHTML = `<div class="card muted">No data yet.</div>`;
-      return;
-    }
-
-    const rows = keys.map(k => {
-      const { done, total, pct } = computeProgress(k);
-      const complete = pct === 100 ? "✅" : "";
-      const pains = (store.days[k].painScores || []).filter(v => typeof v === "number");
-      const avgPain = pains.length ? Math.round((pains.reduce((a,b)=>a+b,0)/pains.length) * 10) / 10 : null;
-      return { date: k, done, total, pct, complete, avgPain };
-    });
-
-    historyWrap.innerHTML = `
-      <div class="card">
-        <table>
-          <thead>
-            <tr><th>Date</th><th>Progress</th><th>Percent</th><th>Pain</th></tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td><b>${escapeHtml(r.date)}</b> <span class="muted">${r.complete}</span></td>
-                <td>${r.done}/${r.total}</td>
-                <td>${r.pct}%</td>
-                <td>${r.avgPain === null ? "—" : `${r.avgPain}/10`}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  // -------------------- Settings --------------------
-  function renderSettings() {
-    programGrid.innerHTML = "";
-    for (const ex of PROGRAM.exercises) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div style="font-weight:700;">${escapeHtml(ex.name)}</div>
-        <div class="muted" style="margin-top:6px;">
-          ${ex.reps} reps
-          ${ex.holdSec > 0 ? ` • ${ex.holdSec}s ${escapeHtml(ex.holdLabel)}` : " • no hold"}
-        </div>
-        <div class="muted small" style="margin-top:6px;">${escapeHtml(ex.description)}</div>
-      `;
-      programGrid.appendChild(card);
-    }
-  }
-
-  // -------------------- Tabs + Actions --------------------
-  function renderTabs() {
-    document.querySelectorAll(".tab").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const target = btn.dataset.tab;
-        document.querySelectorAll(".tabpane").forEach(p => p.hidden = true);
-        $("#" + target).hidden = false;
-
-        if (target === "history") renderHistory();
-        if (target === "settings") renderSettings();
+        grid.appendChild(cell);
       });
+
+      inner.appendChild(card);
     });
-  }
 
-  $("#expandAllBtn").addEventListener("click", () => {
-    document.querySelectorAll("details.round").forEach(d => d.open = true);
+    wrap.appendChild(details);
   });
 
-  $("#collapseAllBtn").addEventListener("click", () => {
-    document.querySelectorAll("details.round").forEach(d => d.open = false);
-  });
-
-  $("#resetTodayBtn").addEventListener("click", () => {
-    if (!confirm("Reset all checkboxes and pain scores for today?")) return;
-    for (const k of Array.from(timers.keys())) stopTimer(k, false);
-    delete store.days[todayKey];
-    ensureDay(todayKey);
-    renderToday();
-  });
-
-  $("#deleteAllBtn").addEventListener("click", () => {
-    if (!confirm("Delete ALL data (all days)?")) return;
-    for (const k of Array.from(timers.keys())) stopTimer(k, false);
-    localStorage.removeItem(LS_KEY);
-    location.reload();
-  });
-$("#exportPdfBtn").addEventListener("click", () => exportDayToPdf(todayKey));
-
-  // -------------------- Utils --------------------
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  // -------------------- Service worker --------------------
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", async () => {
-      try { await navigator.serviceWorker.register("./sw.js"); } catch {}
-    });
-  }
-// -------------------- Export to PDF (Print) --------------------
-function exportDayToPdf(dayKey) {
-  ensureDay(dayKey); // in case user exports before any interaction
-  const day = store.days[dayKey];
-  if (!day) {
-    alert("No data for that day.");
-    return;
-  }
-
-  const reportHtml = buildReportHTML(dayKey);
-  const w = window.open("", "_blank");
-  if (!w) {
-    alert("Popup blocked. Allow popups to export PDF.");
-    return;
-  }
-  w.document.open();
-  w.document.write(reportHtml);
-  w.document.close();
-
-  // Give the new window time to render before printing
-  w.addEventListener("load", () => {
-    w.focus();
-    w.print();
-  });
+  $("#progressLine").textContent=`Checked ${computeDone()}`;
 }
 
-function buildReportHTML(dayKey) {
-  const day = store.days[dayKey];
-  const d = new Date(day.createdAt || Date.now());
-
-  const prog = computeProgress(dayKey);
-
-  // Average pain for the day
-  const pains = (day.painScores || []).filter(v => typeof v === "number");
-  const avgPain = pains.length
-    ? Math.round((pains.reduce((a,b)=>a+b,0)/pains.length) * 10) / 10
-    : null;
-
-  // Build per-round tables
-  const roundsHtml = Array.from({ length: PROGRAM.circuitsPerDay }, (_, r) => {
-    const pain = day.painScores?.[r];
-    const roundPct = roundCompletion(dayKey, r);
-
-    const rows = PROGRAM.exercises.map(ex => {
-      const repsArr = day.rounds[r][ex.id].reps;
-      const done = repsArr.filter(Boolean).length;
-      const total = repsArr.length;
-      return `
-        <tr>
-          <td>${escapeHtml(ex.name)}</td>
-          <td>${escapeHtml(ex.description)}</td>
-          <td>${total}</td>
-          <td>${done}</td>
-          <td>${ex.holdSec > 0 ? `${ex.holdSec}s` : "—"}</td>
-        </tr>
-      `;
-    }).join("");
-
-    return `
-      <section class="round">
-        <h3>Round ${r+1} — ${roundPct}% ${pain === null || pain === undefined ? "" : ` • Pain ${pain}/10`}</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Exercise</th>
-              <th>Description</th>
-              <th>Reps</th>
-              <th>Completed</th>
-              <th>Hold</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </section>
-    `;
-  }).join("");
-
-  return `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>HEP Report ${escapeHtml(dayKey)}</title>
-  <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body { margin: 24px; color:#111827; }
-    h1 { margin: 0 0 8px; font-size: 20px; }
-    .meta { margin: 0 0 16px; color:#374151; }
-    .summary { border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; margin: 16px 0; }
-    .summary b { font-weight: 700; }
-    .round { margin-top: 18px; page-break-inside: avoid; }
-    h3 { margin: 0 0 8px; font-size: 14px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 12px; vertical-align: top; }
-    th { background: #f9fafb; }
-    .footer { margin-top: 18px; color:#6b7280; font-size: 11px; }
-    @media print {
-      body { margin: 12mm; }
-      .summary { break-inside: avoid; }
-      .round { break-inside: avoid; }
-    }
-  </style>
-</head>
-<body>
-  <h1>Home Exercise Program Report</h1>
-  <p class="meta">
-    Date: <b>${escapeHtml(dayKey)}</b> • Generated: ${escapeHtml(d.toLocaleString())}
-  </p>
-
-  <div class="summary">
-    <div><b>Total checked:</b> ${prog.done}/${prog.total} (${prog.pct}%)</div>
-    <div><b>Average pain:</b> ${avgPain === null ? "—" : `${avgPain}/10`}</div>
-  </div>
-
-  ${roundsHtml}
-
-  <div class="footer">
-    Notes: Data is stored locally on this device. Export uses your browser’s Print dialog — choose “Save as PDF”.
-  </div>
-
-  <script>
-    // Ensure consistent printing behavior in some browsers
-    window.onafterprint = () => { /* leave window open */ };
-  </script>
-</body>
-</html>
-  `;
+function roundCompletion(r){
+  const day=store.days[todayKey];
+  let d=0,t=0;
+  PROGRAM.exercises.forEach(ex=>{
+    const a=day.rounds[r][ex.id];
+    t+=a.length; d+=a.filter(Boolean).length;
+  });
+  return Math.round(d/t*100);
 }
 
-  // -------------------- Init --------------------
-  setTodayHeader();
-  renderTabs();
-  renderToday();
+function computeDone(){
+  const day=store.days[todayKey];
+  let d=0,t=0;
+  day.rounds.forEach((_,r)=>{
+    PROGRAM.exercises.forEach(ex=>{
+      const a=day.rounds[r][ex.id];
+      t+=a.length; d+=a.filter(Boolean).length;
+    });
+  });
+  return `${d}/${t}`;
+}
+
+/* ============================================================
+   HISTORY + PDF EXPORT
+============================================================ */
+function exportPdf(){
+  const w=window.open("","_blank");
+  w.document.write(`<pre>${JSON.stringify(store.days[todayKey],null,2)}</pre>`);
+  w.print();
+}
+
+/* ============================================================
+   INIT + EVENTS
+============================================================ */
+$("#todayLine").textContent=`Today: ${todayKey}`;
+$("#exportPdfBtn").onclick=exportPdf;
+$("#resetTodayBtn").onclick=()=>{ if(confirm("Reset today?")){ delete store.days[todayKey]; save(); renderToday(); }};
+$("#deleteAllBtn").onclick=()=>{ if(confirm("Delete all data?")){ localStorage.removeItem(LS_KEY); location.reload(); }};
+$("#expandAllBtn").onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=true);
+$("#collapseAllBtn").onclick=()=>document.querySelectorAll("details").forEach(d=>d.open=false);
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.querySelectorAll(".tabpane").forEach(p=>p.hidden=true);
+  $("#"+b.dataset.tab).hidden=false;
+});
+
+renderToday();
 </script>
 </body>
 </html>
