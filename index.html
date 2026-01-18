@@ -23,7 +23,8 @@
     .spaced { justify-content:space-between; }
 
     .card { background:#0f1a2e; border:1px solid #243045; border-radius:14px; padding:12px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px; }
+
 
     .btn { padding:10px 12px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; }
     .btn.primary { background:#2563eb; border-color:#2563eb; }
@@ -38,11 +39,54 @@
     .exTitle { font-weight:600; }
     .exMeta { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
     .repGrid { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:8px; margin-top:10px; }
-    .repCell { display:flex; align-items:center; gap:8px; padding:10px; border:1px solid #243045; border-radius:12px; background:#0b1220; }
-    .repCell input[type="checkbox"] { width:18px; height:18px; }
+
     .repNum { font-size:12px; color:#cbd5e1; min-width:20px; }
-    .holdWrap { display:flex; align-items:center; gap:8px; margin-left:auto; }
-    .holdTime { font-variant-numeric: tabular-nums; font-size:12px; color:#cbd5e1; min-width:44px; text-align:right; }
+.repGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Make rep cells wrap instead of clipping content */
+.repCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #243045;
+  border-radius: 12px;
+  background: #0b1220;
+  flex-wrap: wrap;              /* ✅ allow wrap */
+}
+
+/* Don’t shove hold controls off-screen */
+.holdWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 0;               /* ✅ remove auto push */
+  width: 100%;                  /* ✅ forces to new line nicely */
+  justify-content: flex-end;    /* ✅ align to right within the cell */
+}
+
+.holdTime {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: #cbd5e1;
+  min-width: 0;                 /* ✅ don’t force width that can clip */
+  text-align: right;
+}
+
+/* ✅ Responsive grid: fewer columns on small screens */
+@media (max-width: 420px) {
+  .repGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 421px) and (max-width: 720px) {
+  .repGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
     .holdBtn { padding:8px 10px; border-radius:10px; border:1px solid #243045; background:#111b2f; color:#e5e7eb; cursor:pointer; font-size:12px; }
     .holdBtn:disabled { opacity:.6; cursor:not-allowed; }
 
